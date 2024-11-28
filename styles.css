@@ -14,11 +14,11 @@
 
 body {
     font-family: Arial, sans-serif;
-    padding: 10px;
+    padding: 0;  /* Remove padding */
     background: #f5f5f5;
-    width: 210mm;
-    height: 297mm;
-    margin: 0 auto;
+    width: 100%;  /* Change from 210mm to 100% */
+    min-height: 100vh;  /* Change from 297mm to 100vh */
+    margin: 0;  /* Remove margin */
 }
 
 /* Container Styles */
@@ -26,23 +26,24 @@ body {
     display: flex;
     flex-direction: column;
     width: 100%;
+    min-height: 100vh;
     background: white;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border: solid 1px #000;
+    padding: 15px;
+    border: none;  /* Remove border */
+    box-shadow: none;  /* Remove shadow on mobile */
 }
 
 /* Controls Section */
+/* Controls Section */
 .controls {
-    padding: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
+    padding: 15px;
+    width: 100%;
 }
 
+/* Card Styles */
+.cards-container {
+    padding: 10px;
+}
 /* Button Styles */
 .btn {
     padding: 10px 20px;
@@ -80,22 +81,19 @@ body {
 }
 
 .card {
-    display: flex;
-    flex-direction: column;
-    width: 48%;
-    height: 100%;
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin: 5px;
+    width: 100%;  /* Make cards full width on mobile */
+    margin: 10px 0;  /* Adjust margin */
+    padding: 15px;
 }
 
 /* Form Elements */
 .input-field {
-    margin: 5px 0;
-    padding: 8px;
-    width: 100%;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
+    padding: 12px;  /* Larger touch targets */
+    font-size: 16px;  /* Better readable size on mobile */
+}
+
+textarea {
+    height: 100px;
 }
 
 .input-field:focus {
@@ -144,11 +142,18 @@ body {
 }
 
 /* Typography */
+/* Typography */
 h2 {
-    padding-left: 25px;
+    font-size: 24px;
+    padding-left: 15px;
 }
 
-h5, p {
+h5 {
+    font-size: 16px;
+    margin: 10px 0;
+}
+
+p {
     margin: 2px 0;
 }
 
@@ -162,9 +167,4 @@ img {
     height: 7.5cm;
     object-fit: cover;
     border-radius: 5px;
-}
-
-textarea {
-    margin-top: 2px;
-    height: 80px;
 }
