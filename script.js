@@ -1,10 +1,9 @@
-// Card Template Function
 function createCardHTML() {
     return `
         <div class="card">
-            <h5 class="photo">Photo</h5>
+            <h5>Photo</h5>
             <input type="file" class="image-upload" accept="image/*" onchange="handleImageUpload(this)" required>
-            <img src="" alt="Inspection Photo" style="display: none;">
+            <img src="" alt="Inspection Photo">
             <div class="input-group">
                 <input type="text" class="input-field sn" placeholder="S/N" required>
                 <div class="error-message"></div>
@@ -21,13 +20,11 @@ function createCardHTML() {
     `;
 }
 
-// Add new card
 function addNewCard() {
     const container = document.getElementById('cardsContainer');
     container.insertAdjacentHTML('beforeend', createCardHTML());
 }
 
-// Form Validation
 function validateForm() {
     const cards = document.querySelectorAll('.card');
     let isValid = true;
@@ -54,7 +51,6 @@ function validateForm() {
     return isValid;
 }
 
-// Error Handling Functions
 function showError(element, message) {
     element.classList.add('error');
     const errorDiv = element.parentElement.querySelector('.error-message');
@@ -67,7 +63,6 @@ function clearError(element) {
     if (errorDiv) errorDiv.textContent = '';
 }
 
-// Image Upload Handler
 function handleImageUpload(input) {
     const file = input.files[0];
     if (file) {
@@ -81,7 +76,6 @@ function handleImageUpload(input) {
     }
 }
 
-// Document Content Generation
 async function getDocumentContent() {
     const { Paragraph, TextRun, ImageRun } = docx;
     const cards = document.querySelectorAll('.card');
@@ -89,7 +83,40 @@ async function getDocumentContent() {
 
     try {
         for (const card of cards) {
-            // ... [Content generation code remains the same]
+            const sn = card.querySelector('.sn').value;
+            const location = card.querySelector('.location').value;
+            const comments = card.querySelector('.comments').value;
+            const img = card.querySelector('img');
+
+            if (img.src) {
+                const response = await fetch(img.src);
+                const blob = await response.blob();
+                const arrayBuffer = await blob.arrayBuffer();
+                const base64Data = Buffer.from(arrayBuffer).toString('base64');
+
+                content.push(
+                    new Paragraph({
+                        children: [
+                            new TextRun({ text: `S/N: ${sn}`, bold: true }),
+                            new TextRun({ text: `\nLocation: ${location}` }),
+                            new TextRun({ text: `\nComments: ${comments}` }),
+                        ],
+                    }),
+                    new Paragraph({
+                        children: [
+                            new ImageRun({
+                                data: base64Data,
+                                transformation: {
+                                    width: 300,
+                                    height: 200,
+                                },
+                                type: 'jpg',
+                            }),
+                        ],
+                    }),
+                    new Paragraph({ spacing: { after: 200 } })
+                );
+            }
         }
         return content;
     } catch (error) {
@@ -98,7 +125,6 @@ async function getDocumentContent() {
     }
 }
 
-// Export Function
 async function exportToWord() {
     const loadingOverlay = document.getElementById('loadingOverlay');
 
