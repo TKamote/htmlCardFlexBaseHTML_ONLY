@@ -81,9 +81,17 @@ body {
 }
 
 .card {
-    width: 100%;  /* Make cards full width on mobile */
-    margin: 10px 0;  /* Adjust margin */
+    width: 100%;
     padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+.card img {
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    object-fit: contain;
+    border-radius: 4px;
 }
 
 /* Form Elements */
@@ -166,4 +174,17 @@ img {
     height: 7.5cm;
     object-fit: cover;
     border-radius: 5px;
+}
+.input-group {
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .card {
+        padding: 10px;
+    }
+    
+    .card img {
+        max-height: 250px;
+    }
 }
