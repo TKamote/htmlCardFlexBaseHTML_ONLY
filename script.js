@@ -89,10 +89,8 @@ async function getDocumentContent() {
             const img = card.querySelector('img');
 
             if (img.src) {
-                const response = await fetch(img.src);
-                const blob = await response.blob();
-                const arrayBuffer = await blob.arrayBuffer();
-                const base64Data = Buffer.from(arrayBuffer).toString('base64');
+                // Convert base64 image data
+                const base64Data = img.src.split(',')[1];
 
                 content.push(
                     new Paragraph({
