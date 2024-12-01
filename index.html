@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>Site Inspection Form</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.8.2/docx.js"></script>
-    <link rel="stylesheet" href="styles.css">
-</head>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+        <title>Site Inspection Form</title>
+        <!-- Change this line -->
+        <script src="https://unpkg.com/docx@7.8.2/build/index.js"></script>
+        <link rel="stylesheet" href="styles.css">
+    </head>
 <body>
     <div id="loadingOverlay" class="loading" style="display: none;">
         <div class="loading-spinner"></div>
@@ -15,8 +16,8 @@
     <div class="container">
         <div class="controls">
             <h2>Site</h2>
-            <button class="btn add-card-btn" onclick="addNewCard()">Add Card</button>
-            <button class="btn export-btn" onclick="exportToWord()">Export to Word</button>
+            <button class="btn add-card-btn" onclick="addNewCard()">Add Inspection Item</button>
+            <button class="btn export-btn" onclick="exportToWord()">Export the Items to WordDoc</button>
         </div>
         <div class="cards-container" id="cardsContainer"></div>
     </div>

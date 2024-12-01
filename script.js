@@ -1,3 +1,5 @@
+const { Document, Paragraph, TextRun, ImageRun, Packer, PageOrientation } = window.docx;
+
 function createCardHTML() {
     return `
         <div class="card">
@@ -124,49 +126,106 @@ async function getDocumentContent() {
 }
 
 async function exportToWord() {
-    const loadingOverlay = document.getElementById('loadingOverlay');
-
-    if (!validateForm()) {
-        alert('Please fill in all required fields');
-        return;
-    }
-
     try {
-        loadingOverlay.style.display = 'flex';
-        const { Document, Packer } = docx;
-        
+        const cards = document.querySelectorAll('.card');
+        if (cards.length === 0) {
+            alert('No content to export');
+            return;
+        }
+
+        document.getElementById('loadingOverlay').style.display = 'flex';
+
         const doc = new Document({
             sections: [{
                 properties: {
                     page: {
                         size: {
-                            orientation: 'portrait'
-                        }
+                            orientation: PageOrientation.PORTRAIT,
+                        },
+                        margin: {
+                            top: 1000,
+                            right: 1000,
+                            bottom: 1000,
+                            left: 1000,
+                        },
                     },
-                    column: {
-                        count: 2,
-                        space: 708,
-                        separate: true,
-                    }
                 },
-                children: await getDocumentContent()
+                children: []
             }]
         });
 
+        // Process each card
+        for (const card of cards) {
+            const sn = card.querySelector('.sn').value;
+            const location = card.querySelector('.location').value;
+            const comments = card.querySelector('.comments').value;
+            const img = card.querySelector('img');
+
+            const paragraphs = [
+                new Paragraph({
+                    children: [
+                        new TextRun({ text: `S/N: ${sn}`, bold: true, size: 24 }),
+                    ],
+                }),
+                new Paragraph({
+                    children: [
+                        new TextRun({ text: `Location: ${location}`, size: 24 }),
+                    ],
+                }),
+                new Paragraph({
+                    children: [
+                        new TextRun({ text: `Comments: ${comments}`, size: 24 }),
+                    ],
+                })
+            ];
+
+            // Add image if it exists
+            if (img && img.src && img.src.startsWith('data:image')) {
+                try {
+                    const base64Data = img.src.split(',')[1];
+                    paragraphs.push(
+                        new Paragraph({
+                            children: [
+                                new ImageRun({
+                                    data: base64Data,
+                                    transformation: {
+                                        width: 400,
+                                        height: 300,
+                                    },
+                                    type: 'jpeg'
+                                }),
+                            ],
+                        })
+                    );
+                } catch (imageError) {
+                    console.error('Image processing error:', imageError);
+                }
+            }
+
+            // Add spacing after each card
+            paragraphs.push(new Paragraph({ spacing: { after: 400 } }));
+
+            // Add all paragraphs to document
+            doc.addSection({
+                children: paragraphs
+            });
+        }
+
+        // Generate and download
         const blob = await Packer.toBlob(doc);
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
-        document.body.appendChild(a);
-        a.style = 'display: none';
         a.href = url;
-        a.download = 'site_inspection.docx';
+        a.download = 'inspection_report.docx';
+        document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
     } catch (error) {
-        console.error('Error exporting document:', error);
-        alert('An error occurred while exporting the document');
+        console.error('Export error:', error);
+        alert(`Export failed: ${error.message}`);
     } finally {
-        loadingOverlay.style.display = 'none';
+        document.getElementById('loadingOverlay').style.display = 'none';
     }
 }
 
