@@ -143,38 +143,44 @@ async function exportToWord() {
                             orientation: PageOrientation.PORTRAIT,
                         },
                         margin: {
-                            top: 1000,
-                            right: 1000,
-                            bottom: 1000,
-                            left: 1000,
+                            top: 500,    // Reduced margins
+                            right: 500,
+                            bottom: 500,
+                            left: 500,
                         },
                     },
+                    column: {
+                        count: 2,        // Two columns
+                        space: 500,      // Space between columns
+                        separate: true,  // Add separator line between columns
+                    }
                 },
                 children: []
             }]
         });
 
-        // Process each card
-        for (const card of cards) {
+        // Process cards in pairs
+        for (let i = 0; i < cards.length; i++) {
+            const card = cards[i];
             const sn = card.querySelector('.sn').value;
             const location = card.querySelector('.location').value;
             const comments = card.querySelector('.comments').value;
             const img = card.querySelector('img');
 
-            const paragraphs = [
+            const cardContent = [
                 new Paragraph({
                     children: [
-                        new TextRun({ text: `S/N: ${sn}`, bold: true, size: 24 }),
+                        new TextRun({ text: `S/N: ${sn}`, bold: true, size: 20 }),
                     ],
                 }),
                 new Paragraph({
                     children: [
-                        new TextRun({ text: `Location: ${location}`, size: 24 }),
+                        new TextRun({ text: `Location: ${location}`, size: 20 }),
                     ],
                 }),
                 new Paragraph({
                     children: [
-                        new TextRun({ text: `Comments: ${comments}`, size: 24 }),
+                        new TextRun({ text: `Comments: ${comments}`, size: 20 }),
                     ],
                 })
             ];
@@ -183,14 +189,14 @@ async function exportToWord() {
             if (img && img.src && img.src.startsWith('data:image')) {
                 try {
                     const base64Data = img.src.split(',')[1];
-                    paragraphs.push(
+                    cardContent.push(
                         new Paragraph({
                             children: [
                                 new ImageRun({
                                     data: base64Data,
                                     transformation: {
-                                        width: 400,
-                                        height: 300,
+                                        width: 200,     // Reduced size for 2x2 grid
+                                        height: 150,
                                     },
                                     type: 'jpeg'
                                 }),
@@ -202,13 +208,22 @@ async function exportToWord() {
                 }
             }
 
-            // Add spacing after each card
-            paragraphs.push(new Paragraph({ spacing: { after: 400 } }));
+            // Add spacing between cards
+            cardContent.push(new Paragraph({ spacing: { after: 200 } }));
 
-            // Add all paragraphs to document
+            // Add content to document
             doc.addSection({
-                children: paragraphs
+                children: cardContent
             });
+
+            // Add page break after every 4 cards (2x2 grid)
+            if ((i + 1) % 4 === 0 && i !== cards.length - 1) {
+                doc.addParagraph(new Paragraph({ pageBreakBefore: true }));
+            }
+            // Add column break after odd numbered cards (except last card)
+            else if ((i + 1) % 2 === 1 && i !== cards.length - 1) {
+                doc.addParagraph(new Paragraph({ columnBreakBefore: true }));
+            }
         }
 
         // Generate and download
